@@ -12,6 +12,6 @@ jobs:
         with:
           node-version: 16.18.0
       - name: Install dependencies
-        run: npm --force ci
+        run: npm ci --force
       - name: Run tests
         run: npm run test:unit
