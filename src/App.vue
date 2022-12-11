@@ -1,6 +1,8 @@
 <template>
-  <navbar></navbar>
-  <router-view/>
+  <div class="background">
+    <navbar></navbar>
+    <router-view/>
+  </div>
 </template>
 
 <script>
@@ -18,7 +20,14 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: #eee4e4;
+}
+
+.background  {
+  background: #0b025d;
+  background: -webkit-linear-gradient(to left, rgb(45, 173, 88), rgb(11, 2, 93));
+  background: linear-gradient(to left, rgb(45, 173, 88), rgb(11, 2, 93));
+  height: 100vh;
 }
 
 nav {
@@ -27,10 +36,10 @@ nav {
 
 nav a {
   font-weight: bold;
-  color: #2c3e50;
+  color: #ffffff;
 }
 
 nav a.router-link-exact-active {
-  color: #42b983;
+  color: #ffffff;
 }
 </style>
