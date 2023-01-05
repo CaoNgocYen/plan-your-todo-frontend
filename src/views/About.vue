@@ -11,7 +11,8 @@
 <script>
 
 export default {
-  name: 'AboutView',
+  // eslint-disable-next-line vue/multi-word-component-names
+  name: 'About',
   components: {
   }
 }

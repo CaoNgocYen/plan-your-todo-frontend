@@ -15,18 +15,22 @@ export default {
 </script>
 
 <style>
+* {
+  margin: 0;
+  padding: 0;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #eee4e4;
+  color: #2c2c2c;
 }
 
 .background  {
-  background: #0b025d;
-  background: -webkit-linear-gradient(to left, rgb(45, 173, 88), rgb(11, 2, 93));
-  background: linear-gradient(to left, rgb(45, 173, 88), rgb(11, 2, 93));
+  background: #ffffff;
+  background: -webkit-linear-gradient(to left, rgb(255, 255, 255), rgb(255, 255, 255));
+  background: linear-gradient(to left, rgb(255, 255, 255), rgb(255, 255, 255));
   height: 100vh;
 }
 

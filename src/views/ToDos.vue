@@ -6,7 +6,7 @@
       <tr>
         <th scope="col">Title</th>
         <th scope="col">Description</th>
-        <th scope="col">Due Date</th>
+        <th scope="col">Deadline</th>
         <th scope="col">Is Completed</th>
       </tr>
       </thead>
@@ -14,7 +14,7 @@
       <tr v-for="todo in todos" :key="todo.id">
         <td>{{ todo.title }}</td>
         <td>{{ todo.description }}</td>
-        <td>{{ todo.dueDate }}</td>
+        <td>{{ todo.deadline }}</td>
         <td>{{ todo.completed }}</td>
       </tr>
       </tbody>
@@ -36,7 +36,6 @@ export default {
       method: 'GET',
       redirect: 'follow'
     }
-
     fetch(endpoint, requestOptions)
       .then(response => response.json())
       .then(result => result.forEach(todo => {

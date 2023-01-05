@@ -11,7 +11,7 @@
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
           <router-link class="nav-link" to="/">About</router-link>
-          <router-link class="nav-link" to="/to-dos">My To-Do List</router-link>
+          <router-link class="nav-link" to="/to-dos">To-Do List</router-link>
           <router-link class="nav-link" to="/add">Add</router-link>
         </div>
       </div>
