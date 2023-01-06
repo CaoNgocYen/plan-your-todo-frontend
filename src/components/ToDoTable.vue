@@ -3,17 +3,11 @@
     <table class="table table-striped table-bordered table-hover">
       <thead>
       <tr>
-        <th role="button" scope="col" @click="sortBy('titel')">Title
-          <i v-if="sortedColumn === 'title' && sortedState === 2" class="bi bi-caret-up-fill"></i>
-          <i v-if="sortedColumn === 'title' && sortedState === 1" class="bi bi-caret-down-fill"></i>
-        </th>
-        <th role="button" scope="col" @click="sortBy('description')">Description
-          <i v-if="sortedColumn === 'description' && sortedState === 2" class="bi bi-caret-up-fill"></i>
-          <i v-if="sortedColumn === 'description' && sortedState === 1" class="bi bi-caret-down-fill"></i>
-        </th>
-        <th role="button" scope="col" @click="sortBy('date')">Deadline
-          <i v-if="sortedColumn === 'date' && sortedState === 2" class="bi bi-caret-up-fill"></i>
-          <i v-if="sortedColumn === 'date' && sortedState === 1" class="bi bi-caret-down-fill"></i>
+        <th scope="col">Title</th>
+        <th scope="col">Description</th>
+        <th role="button" scope="col" @click="sortBy('deadline')">Deadline
+          <i v-if="sortedColumn === 'deadline' && sortedState === 2"></i>
+          <i v-if="sortedColumn === 'deadline' && sortedState === 1"></i>
         </th>
         <th scope="col">Actions</th>
       </tr>
@@ -23,14 +17,14 @@
         <td>{{ toDo.title }}</td>
         <td>{{ toDo.description }}</td>
         <td>{{ toDo.formatDate }}</td>
-        <td v-if="toDo.done">
-          <i role="button" class="bi bi-arrow-clockwise mx-1" @click="editDone(toDo)"></i>
-          <i role="button" class="bi bi-archive-fill mx-1" @click="deleteToDo(toDo)"></i>
+        <td v-if="toDo.completed">
+          <i role="button" class="fas fa-check" @click="editDone(toDo)"></i>
+          <i role="button" class="fas fa-trash-alt" @click="deleteTodo(toDo)"></i>
         </td>
         <td v-else class="">
-          <i role="button" class="bi bi-check-square mx-1" @click="editDone(toDo)"></i>
-          <i role="button" class="bi bi-pencil-square mx-1" @click="openModal(toDo)"></i>
-          <i role="button" class="bi bi-archive-fill mx-1" @click="deleteToDo(toDo)"></i>
+          <i role="button" class="fas fa-check" @click="editDone(toDo)"></i>
+          <i role="button" class="fas fa-edit" @click="openModal(toDo)"></i>
+          <i role="button" class="fas fa-trash-alt" @click="deleteTodo(toDo)"></i>
         </td>
       </tr>
       </tbody>
@@ -46,7 +40,7 @@ export default {
       type: Array,
       required: true
     },
-    deleteToDo: Function,
+    deleteTodo: Function,
     editTodo: Function,
     openModal: Function
   },
@@ -65,7 +59,7 @@ export default {
   },
   methods: {
     editDone (toDo) {
-      toDo.done = !toDo.done
+      toDo.completed = !toDo.completed
       this.editTodo(toDo)
     },
     sortBy (column) {

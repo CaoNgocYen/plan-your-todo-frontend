@@ -1,35 +1,60 @@
 <template>
-  <div class="container">
-    <form class="form-horizontal mt-5" novalidate>
-      <div class="form-group row">
-        <label for="title" class="control-label col-sm-2">Title:</label>
-        <div class="col-sm-20">
-          <input type="text" class="form-control" id="title" v-model="title" required placeholder="Enter title">
-          <span class="invalid-feedback" v-if="title === ''">A title must be filled in</span>
+  <transition name="modal">
+    <div class="modal-mask">
+      <div class="modal-wrapper">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 v-if="modalData.id" class="modal-title">ToDo bearbeiten</h5>
+              <h5 v-else class="modal-titel"> <strong>Create a new To-Do</strong></h5>
+            </div>
+            <form class="needs-validation" id="to-do-create" novalidate>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label>Title</label>
+                  <input type="text" class="form-control" v-model="title" placeholder="Enter title" required>
+                  <div class="invalid-feedback">
+                    A title muss be filled in.
+                  </div>
+                </div>
+                <div class="form-group mt-3 needs-validation" novalidate>
+                  <label>Description</label>
+                  <input type="text" class="form-control" v-model="description" placeholder="Enter description" required>
+                  <div class="invalid-feedback">
+                    A description muss be filled in.
+                  </div>
+                </div>
+                <div class="form-group mt-3 needs-validation" novalidate>
+                  <label for='prior' class='form-label'>Priority</label>
+                  <select id='prior' class='form-select' v-model="prior" placeholder="Select a status" required>
+                    <option value='' selected disabled>Choose...</option>
+                    <option value='h'>High</option>
+                    <option value='m'>Medium</option>
+                    <option value='l'>Low</option>
+                  </select>
+                  <div class='invalid-feedback'>
+                    A status muss be selected.
+                  </div>
+                </div>
+                <div class="form-group mt-3 needs-validation" novalidate>
+                  <label>Deadline</label>
+                  <input type="date" class="form-control" v-model="deadline" required placeholder="Enter deadline">
+                  <div class='invalid-feedback'>
+                    A deadline muss be selected.
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class='btn btn-danger me-3' type='reset' @click='resetForm'>Reset</button>
+                <button class='btn btn-primary me-3' type='submit' @click='saveForm'>Submit</button>
+                <button class='btn btn-primary me-3' type='close' @click='closeModal'>Close</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-      <div class="form-group row">
-        <label for="description" class="control-label col-sm-2">Description:</label>
-        <div class="col-sm-20">
-          <textarea class="form-control" id="description" v-model="description" required placeholder="Enter description"></textarea>
-          <span class="invalid-feedback" v-if="description === ''">A description must be filled in</span>
-        </div>
-      </div>
-      <div class="form-group row">
-        <label for="deadline" class="control-label col-sm-2">Deadline:</label>
-        <div class="col-sm-20">
-          <input type="date" class="form-control" id="deadline" v-model="deadline" required placeholder="Enter deadline">
-          <span class="invalid-feedback" v-if="deadline === ''">A deadline must be filled in</span>
-        </div>
-      </div>
-      <div class="form-group row">
-        <div class="col-sm-offset-2 col-sm-15">
-          <button type="submit" class="btn btn-primary mr-2">Submit</button>
-          <button type="button" class="btn btn-secondary" @click="resetForm">Reset</button>
-        </div>
-      </div>
-    </form>
-  </div>
+    </div>
+  </transition>
 </template>
 
 <style>
@@ -55,14 +80,51 @@ export default {
     return {
       title: '',
       description: '',
-      deadline: ''
+      deadline: '',
+      response: {}
     }
   },
   methods: {
-    resetForm: function () {
+    saveForm () {
+      let valid = true
+      if (this.title !== '' && this.description !== '' && this.priority !== '' && this.deadline !== '') {
+        this.response = {}
+        if (this.modalData.id) {
+          this.response = this.modalData
+        } else {
+          this.response.completed = false
+        }
+        this.response.title = this.title
+        this.response.description = this.description
+        this.response.deadline = this.deadline
+        this.editTodo(this.response)
+      } else {
+        valid = false
+        // Show warning message
+        alert('All fields are required!')
+      }
+      return valid
+    },
+    validate () {
+      let valid = true
+      const form = document.querySelector('#to-do-create')
+      if (!form.checkValidity()) {
+        valid = false
+      }
+      form.classList.add('was-validated')
+      return valid
+    },
+    resetForm () {
       this.title = ''
       this.description = ''
       this.deadline = ''
+    }
+  },
+  mounted () {
+    if (this.modalData) {
+      this.title = this.modalData.title
+      this.description = this.modalData.description
+      this.deadline = this.modalData.deadline
     }
   }
 }
