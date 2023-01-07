@@ -2,7 +2,7 @@
   <div class="container mt-3">
     <h1>Your To-Do List</h1>
   </div>
-  <create-to-do v-if="isModalOpen" :modalData="modalData" :editTodo="editTodo" :closeModal="closeModal"></create-to-do>
+  <create-to-do v-if="isModalOpen" @created="addTodo" :modalData="modalData" :editTodo="editTodo" :closeModal="closeModal"></create-to-do>
   <div class="container mt-3">
     <div class="row d-flex justify-content-between">
       <div class="col-3">
@@ -12,11 +12,11 @@
     </div>
     <div class="row mt-2">
       <p class="h6 text-decoration-underline">Noch zu erledigen:</p>
-      <to-do-table :toDos="checkToDos(false)" :deleteTodo="deleteTodo" :editTodo="editTodo" :openModal="openModal"></to-do-table>
+      <to-do-table :toDos="filterTodos(false)" :deleteTodo="deleteTodo" :editTodo="editTodo" :openModal="openModal"></to-do-table>
     </div>
     <div class="row mt-2">
       <p class="text-decoration-underline h6">Bereits erledigt:</p>
-      <to-do-table :toDos="checkToDos(true)" :deleteTodo="deleteTodo" :editTodo="editTodo"></to-do-table>
+      <to-do-table :toDos="filterTodos(true)" :deleteTodo="deleteTodo" :editTodo="editTodo"></to-do-table>
     </div>
   </div>
 </template>
@@ -37,9 +37,10 @@ export default {
       modalData: null
     }
   },
+  emits: ['created'],
   methods: {
-    checkToDos (isCompleted) {
-      return this.toDos.filter(a => a.completed === isCompleted && a.formatDate.includes(this.searchInput))
+    filterTodos (isCompleted) {
+      return this.toDos.filter(a => a.completed === isCompleted && (a.formatDate.includes(this.searchInput) || a.title.includes(this.searchInput)))
     },
     async deleteTodo (toDo) {
       const findIndex = this.toDos.findIndex(a => a.id === toDo.id)
@@ -68,20 +69,21 @@ export default {
       }
       let endpoint = process.env.VUE_APP_BACKEND_BASE_URL + '/api/v1/todos'
       let method = 'POST'
-      const findIndex = this.toDos.findIndex(a => a.id === toDo.id)
-      if (findIndex !== -1) {
+      if (!toDo.id) {
+        toDo.id = Date.now().toString()
+      } else {
         endpoint += '/' + toDo.id
         method = 'PUT'
       }
-
       const headers = new Headers()
       headers.append('Content-Type', 'application/json')
+
       const deadline = toDo.deadline.toString().split('-')
-      console.log(deadline)
       deadline[0] = parseInt(deadline[0])
       deadline[1] = parseInt(deadline[1])
       deadline[2] = parseInt(deadline[2])
       toDo.deadline = deadline
+
       const toDoStringify = JSON.stringify(toDo)
       const requestOptions = {
         method: method,
@@ -90,7 +92,6 @@ export default {
         redirect: 'follow'
       }
       const response = await fetch(endpoint, requestOptions)
-
       if (response.ok) {
         const year = toDo.deadline[0]
         let month = toDo.deadline[1]
@@ -103,10 +104,11 @@ export default {
         }
         toDo.deadline = year + '-' + month + '-' + day
         toDo.formatDate = day + '.' + month + '.' + year
+        // Update to-do in array
+        const findIndex = this.toDos.findIndex(a => a.id === toDo.id)
         if (findIndex !== -1) {
           this.toDos[findIndex] = toDo
         } else {
-          toDo.id = parseInt(response.headers.get('location'))
           this.toDos.push(toDo)
         }
       }

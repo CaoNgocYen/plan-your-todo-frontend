@@ -6,7 +6,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 v-if="modalData.id" class="modal-title">ToDo bearbeiten</h5>
-              <h5 v-else class="modal-titel"> <strong>Create a new To-Do</strong></h5>
+              <h5 v-else class="modal-title"> <strong>Create a new To-Do</strong></h5>
             </div>
             <form class="needs-validation" id="to-do-create" novalidate>
               <div class="modal-body">
@@ -42,6 +42,13 @@
                   <div class='invalid-feedback'>
                     A deadline muss be selected.
                   </div>
+                </div>
+                <div v-if="this.serverValidationMessages">
+                  <ul>
+                    <li v-for="(message, index) in serverValidationMessages" :key="index" style="color: red">
+                      {{ message }}
+                    </li>
+                  </ul>
                 </div>
               </div>
               <div class="modal-footer">
@@ -81,38 +88,52 @@ export default {
       title: '',
       description: '',
       deadline: '',
-      response: {}
+      serverValidationMessages: []
     }
   },
+  emits: ['created'],
   methods: {
-    saveForm () {
-      let valid = true
-      if (this.title !== '' && this.description !== '' && this.priority !== '' && this.deadline !== '') {
-        this.response = {}
-        if (this.modalData.id) {
-          this.response = this.modalData
-        } else {
-          this.response.completed = false
+    async saveForm () {
+      if (this.validate()) {
+        const endpoint = process.env.VUE_APP_BACKEND_BASE_URL + '/api/v1/todos'
+
+        const headers = new Headers()
+        headers.append('Content-Type', 'application/json')
+
+        const todo = JSON.stringify({
+          title: this.title,
+          description: this.description,
+          deadline: this.deadline
+        })
+
+        const requestOptions = {
+          method: 'POST',
+          headers: headers,
+          body: todo,
+          redirect: 'follow'
         }
-        this.response.title = this.title
-        this.response.description = this.description
-        this.response.deadline = this.deadline
-        this.editTodo(this.response)
-      } else {
-        valid = false
-        // Show warning message
-        alert('All fields are required!')
+
+        const response = await fetch(endpoint, requestOptions)
+        await this.handleResponse(response)
       }
-      return valid
+    },
+    async handleResponse (response) {
+      if (response.ok) {
+        this.$emit('created', response.headers.get('location'))
+        document.getElementById('to-do-create').click()
+      } else if (response.status === 400) {
+        response = await response.json()
+        response.errors.forEach(error => {
+          this.serverValidationMessages.push(error.defaultMessage)
+        })
+      } else {
+        this.serverValidationMessages.push('Unknown error occurred')
+      }
     },
     validate () {
-      let valid = true
-      const form = document.querySelector('#to-do-create')
-      if (!form.checkValidity()) {
-        valid = false
-      }
+      const form = document.getElementById('to-do-create')
       form.classList.add('was-validated')
-      return valid
+      return form.checkValidity()
     },
     resetForm () {
       this.title = ''

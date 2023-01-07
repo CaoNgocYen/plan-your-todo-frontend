@@ -5,9 +5,19 @@
       <tr>
         <th scope="col">Title</th>
         <th scope="col">Description</th>
-        <th role="button" scope="col" @click="sortBy('deadline')">Deadline
-          <i v-if="sortedColumn === 'deadline' && sortedState === 2"></i>
-          <i v-if="sortedColumn === 'deadline' && sortedState === 1"></i>
+        <th role="button" scope="col" @click="sortDeadline('deadline')">Deadline
+          <button
+            class="btn btn-link"
+            @click="sortDeadline('asc')"
+          >
+            <i class="fas fa-sort-up"></i>
+          </button>
+          <button
+            class="btn btn-link"
+            @click="sortDeadline('desc')"
+          >
+            <i class="fas fa-sort-down"></i>
+          </button>
         </th>
         <th scope="col">Actions</th>
       </tr>
@@ -47,8 +57,7 @@ export default {
   data () {
     return {
       toDosCopy: this.toDos,
-      sortedColumn: '',
-      sortedState: 0
+      sortOrder: 'asc'
     }
   },
   watch: {
@@ -62,27 +71,26 @@ export default {
       toDo.completed = !toDo.completed
       this.editTodo(toDo)
     },
-    sortBy (column) {
-      if (this.sortedColumn === column) {
-        if (this.sortedState === 1) {
-          this.sortedState = 2
-        } else {
-          this.sortedState = 0
-          this.sortedColumn = ''
-        }
-      } else {
-        this.sortedColumn = column
-        this.sortedState = 1
+    sortDeadline (order) {
+      if (order === 'asc') {
+        this.toDosCopy.sort((a, b) => {
+          return new Date(a.deadline) - new Date(b.deadline)
+        })
+      } else if (order === 'desc') {
+        this.toDosCopy.sort((a, b) => {
+          return new Date(b.deadline) - new Date(a.deadline)
+        })
       }
-      this.sort()
     },
     sort () {
-      if (this.sortedState === 0) {
-        this.toDosCopy.sort((a, b) => a.id > b.id ? 1 : -1)
-      } else if (this.sortedState === 1) {
-        this.toDosCopy.sort((a, b) => a[this.sortedColumn] > b[this.sortedColumn] ? -1 : 1)
-      } else {
-        this.toDosCopy.sort((a, b) => a[this.sortedColumn] > b[this.sortedColumn] ? 1 : -1)
+      if (this.sortOrder === 'asc') {
+        this.toDosCopy.sort((a, b) => {
+          return new Date(a.deadline) - new Date(b.deadline)
+        })
+      } else if (this.sortOrder === 'desc') {
+        this.toDosCopy.sort((a, b) => {
+          return new Date(b.deadline) - new Date(a.deadline)
+        })
       }
     }
   }
