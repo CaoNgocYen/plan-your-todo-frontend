@@ -77,6 +77,7 @@ export default {
           return new Date(b.deadline) - new Date(a.deadline)
         })
       }
+      this.sortOrder = order
     },
     sort () {
       if (this.sortOrder === 'asc') {

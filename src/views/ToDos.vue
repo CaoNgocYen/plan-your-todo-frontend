@@ -5,17 +5,18 @@
   <create-to-do v-if="isModalOpen" @created="addTodo" :modalData="modalData" :editTodo="editTodo" :closeModal="closeModal"></create-to-do>
   <div class="container mt-3">
     <div class="row d-flex justify-content-between">
+      <button class="btn btn-secondary col-auto px-4" @click="openModal">New To-Do</button>
       <div class="col-3">
         <input class="form-control bg-blue text-gray" v-model="searchInput" placeholder="Filter by word"/>
       </div>
-      <button class="btn btn-secondary col-auto px-4" @click="openModal">New To-Do</button>
     </div>
     <div class="row mt-2">
-      <p class="text-success text-white">Need to do</p>
+      <p></p>
+      <p class="text-success text-white"><strong>Need to do</strong></p>
       <to-do-table :toDos="filterTodos(false)" :deleteTodo="deleteTodo" :editTodo="editTodo" :openModal="openModal"></to-do-table>
     </div>
     <div class="row mt-2">
-      <p class="text-success text-white">To-Dos completed</p>
+      <p class="text-success text-white"><strong>To-Dos completed</strong></p>
       <to-do-table :toDos="filterTodos(true)" :deleteTodo="deleteTodo" :editTodo="editTodo"></to-do-table>
     </div>
   </div>

@@ -5,7 +5,7 @@
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 v-if="modalData.id" class="modal-title">ToDo bearbeiten</h5>
+              <h5 v-if="modalData.id" class="modal-title">Edit To-Do</h5>
               <h5 v-else class="modal-title"> <strong>Create a new To-Do</strong></h5>
             </div>
             <form class="needs-validation" id="to-do-create" novalidate>
