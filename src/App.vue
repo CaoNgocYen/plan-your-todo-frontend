@@ -21,10 +21,10 @@ export default {
 }
 
 .background  {
-  background: #2dad58;
+  background: #ffffff;
   background: -webkit-linear-gradient(to left, rgb(147, 213, 168), rgb(73, 99, 147));
   background: linear-gradient(to bottom right, #93d5a8, #496393);
-  height: 100vh;
+  height: 300vh;
 }
 
 nav {

@@ -6,19 +6,19 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 v-if="modalData.id" class="modal-title">Edit To-Do</h5>
-              <h5 v-else class="modal-title"> <strong>Create a new To-Do</strong></h5>
+              <h5 v-else class="text-center m-lg-auto">Create a new To-Do</h5>
             </div>
             <form class="needs-validation" id="to-do-create" novalidate>
-              <div class="modal-body">
+              <div class="modal-body p-5">
                 <div class="form-group">
-                  <label>Title</label>
+                  <label class="font-weight-bold">Title</label>
                   <input type="text" class="form-control" v-model="title" placeholder="Enter title" required>
                   <div class="invalid-feedback">
                     A title muss be filled in.
                   </div>
                 </div>
                 <div class="form-group mt-3 needs-validation" novalidate>
-                  <label>Description</label>
+                  <label class="font-weight-bold">Description</label>
                   <input type="text" class="form-control" v-model="description" placeholder="Enter description" required>
                   <div class="invalid-feedback">
                     A description muss be filled in.
@@ -39,10 +39,10 @@
                   </ul>
                 </div>
               </div>
-              <div class="modal-footer">
-                <button class='btn btn-secondary me-3' type='reset' @click='resetForm'>Reset</button>
-                <button class='btn btn-secondary me-3' type='submit' @click='saveForm'>Submit</button>
-                <button class='btn btn-secondary me-3' type='close' @click='closeModal'>Close</button>
+              <div class="modal-footer d-flex justify-content-around">
+                <button class='btn btn-secondary' type='reset' @click='resetForm'>Reset</button>
+                <button class='btn btn-secondary' type='submit' @click='saveForm'>Submit</button>
+                <button class='btn btn-secondary' type='close' @click='closeModal'>Close</button>
               </div>
             </form>
           </div>
@@ -53,6 +53,10 @@
 </template>
 
 <style>
+* {
+  margin: 0;
+  padding: 0;
+}
 .modal-wrapper {
   position: fixed;
   padding: 50px 0;

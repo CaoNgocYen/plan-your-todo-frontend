@@ -99,7 +99,6 @@ export default {
   display: flex;
   justify-content: space-between;
 }
-
 .actions-button {
   display: flex;
   justify-content: space-around;
