@@ -6,16 +6,16 @@
   <div class="container mt-3">
     <div class="row d-flex justify-content-between">
       <div class="col-3">
-        <input class="form-control bg-dark text-white" v-model="searchInput" placeholder="Filter nach Modul oder Datum..."/>
+        <input class="form-control bg-blue text-gray" v-model="searchInput" placeholder="Filter by word"/>
       </div>
-      <button class="btn btn-success col-auto px-4" @click="openModal">Erstellen</button>
+      <button class="btn btn-secondary col-auto px-4" @click="openModal">New To-Do</button>
     </div>
     <div class="row mt-2">
-      <p class="h6 text-decoration-underline">Noch zu erledigen:</p>
+      <p class="text-success text-white">Need to do</p>
       <to-do-table :toDos="filterTodos(false)" :deleteTodo="deleteTodo" :editTodo="editTodo" :openModal="openModal"></to-do-table>
     </div>
     <div class="row mt-2">
-      <p class="text-decoration-underline h6">Bereits erledigt:</p>
+      <p class="text-success text-white">To-Dos completed</p>
       <to-do-table :toDos="filterTodos(true)" :deleteTodo="deleteTodo" :editTodo="editTodo"></to-do-table>
     </div>
   </div>
@@ -40,7 +40,7 @@ export default {
   emits: ['created'],
   methods: {
     filterTodos (isCompleted) {
-      return this.toDos.filter(a => a.completed === isCompleted && (a.formatDate.includes(this.searchInput) || a.title.includes(this.searchInput)))
+      return this.toDos.filter(a => a.completed === isCompleted && (a.title.includes(this.searchInput) || a.description.includes(this.searchInput)))
     },
     async deleteTodo (toDo) {
       const findIndex = this.toDos.findIndex(a => a.id === toDo.id)
@@ -67,14 +67,15 @@ export default {
       if (this.isModalOpen) {
         this.closeModal()
       }
-      let endpoint = process.env.VUE_APP_BACKEND_BASE_URL + '/api/v1/todos'
-      let method = 'POST'
+
       if (!toDo.id) {
-        toDo.id = Date.now().toString()
-      } else {
-        endpoint += '/' + toDo.id
-        method = 'PUT'
+        console.error('Invalid to-do item:', toDo)
+        return
       }
+
+      const endpoint = process.env.VUE_APP_BACKEND_BASE_URL + '/api/v1/todos/' + toDo.id
+      const method = 'PUT'
+
       const headers = new Headers()
       headers.append('Content-Type', 'application/json')
 
@@ -82,35 +83,31 @@ export default {
       deadline[0] = parseInt(deadline[0])
       deadline[1] = parseInt(deadline[1])
       deadline[2] = parseInt(deadline[2])
-      toDo.deadline = deadline
+      const body = {
+        title: toDo.title,
+        description: toDo.description,
+        deadline: deadline,
+        priority: toDo.priority,
+        completed: toDo.completed
+      }
 
-      const toDoStringify = JSON.stringify(toDo)
       const requestOptions = {
         method: method,
         headers: headers,
-        body: toDoStringify,
+        body: JSON.stringify(body),
         redirect: 'follow'
       }
+
       const response = await fetch(endpoint, requestOptions)
       if (response.ok) {
-        const year = toDo.deadline[0]
-        let month = toDo.deadline[1]
-        let day = toDo.deadline[2]
-        if (month < 10) {
-          month = '0' + month
-        }
-        if (day < 10) {
-          day = '0' + day
-        }
-        toDo.deadline = year + '-' + month + '-' + day
-        toDo.formatDate = day + '.' + month + '.' + year
-        // Update to-do in array
-        const findIndex = this.toDos.findIndex(a => a.id === toDo.id)
-        if (findIndex !== -1) {
-          this.toDos[findIndex] = toDo
+        const index = this.toDos.findIndex(item => item.id === toDo.id)
+        if (index === -1) {
+          console.error('Error updating to-do item: item not found')
         } else {
-          this.toDos.push(toDo)
+          this.toDos.splice(index, 1, toDo)
         }
+      } else {
+        console.error('Error updating to-do item:', response)
       }
     },
     openModal (toDo = null) {

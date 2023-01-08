@@ -25,18 +25,6 @@
                   </div>
                 </div>
                 <div class="form-group mt-3 needs-validation" novalidate>
-                  <label for='prior' class='form-label'>Priority</label>
-                  <select id='prior' class='form-select' v-model="prior" placeholder="Select a status" required>
-                    <option value='' selected disabled>Choose...</option>
-                    <option value='h'>High</option>
-                    <option value='m'>Medium</option>
-                    <option value='l'>Low</option>
-                  </select>
-                  <div class='invalid-feedback'>
-                    A status muss be selected.
-                  </div>
-                </div>
-                <div class="form-group mt-3 needs-validation" novalidate>
                   <label>Deadline</label>
                   <input type="date" class="form-control" v-model="deadline" required placeholder="Enter deadline">
                   <div class='invalid-feedback'>
@@ -52,9 +40,9 @@
                 </div>
               </div>
               <div class="modal-footer">
-                <button class='btn btn-danger me-3' type='reset' @click='resetForm'>Reset</button>
-                <button class='btn btn-primary me-3' type='submit' @click='saveForm'>Submit</button>
-                <button class='btn btn-primary me-3' type='close' @click='closeModal'>Close</button>
+                <button class='btn btn-secondary me-3' type='reset' @click='resetForm'>Reset</button>
+                <button class='btn btn-secondary me-3' type='submit' @click='saveForm'>Submit</button>
+                <button class='btn btn-secondary me-3' type='close' @click='closeModal'>Close</button>
               </div>
             </form>
           </div>
@@ -65,12 +53,15 @@
 </template>
 
 <style>
-.container {
-  display: grid;
-  position: relative;
-  align-items: start;
-  justify-content: center;
+.modal-wrapper {
+  position: fixed;
+  padding: 50px 0;
+  width: 100%;
   height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(to bottom right, #93d5a8, #496393);
 }
 </style>
 
@@ -95,7 +86,12 @@ export default {
   methods: {
     async saveForm () {
       if (this.validate()) {
-        const endpoint = process.env.VUE_APP_BACKEND_BASE_URL + '/api/v1/todos'
+        let endpoint = process.env.VUE_APP_BACKEND_BASE_URL + '/api/v1/todos'
+        let method = 'POST'
+        if (this.modalData.id) {
+          endpoint += '/' + this.modalData.id
+          method = 'PUT'
+        }
 
         const headers = new Headers()
         headers.append('Content-Type', 'application/json')
@@ -107,7 +103,7 @@ export default {
         })
 
         const requestOptions = {
-          method: 'POST',
+          method: method,
           headers: headers,
           body: todo,
           redirect: 'follow'
@@ -119,15 +115,21 @@ export default {
     },
     async handleResponse (response) {
       if (response.ok) {
-        this.$emit('created', response.headers.get('location'))
-        document.getElementById('to-do-create').click()
-      } else if (response.status === 400) {
-        response = await response.json()
-        response.errors.forEach(error => {
-          this.serverValidationMessages.push(error.defaultMessage)
-        })
+        const toDo = await response.json()
+        if (this.modalData.id) {
+          // ToDo item was updated, so update the toDos array
+          const index = this.toDos.findIndex(item => item.id === this.modalData.id)
+          if (index === -1) {
+            console.error('Error updating to-do item: item not found')
+          } else {
+            this.toDos.splice(index, 1, toDo)
+          }
+        } else {
+          // ToDo item was created, so add it to the toDos array
+          this.toDos.push(toDo)
+        }
       } else {
-        this.serverValidationMessages.push('Unknown error occurred')
+        console.error('Error saving to-do item:', response)
       }
     },
     validate () {

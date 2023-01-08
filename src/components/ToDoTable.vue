@@ -1,23 +1,19 @@
 <template>
   <div>
-    <table class="table table-striped table-bordered table-hover">
+    <table class="table table-bordered table-hover">
       <thead>
       <tr>
         <th scope="col">Title</th>
         <th scope="col">Description</th>
         <th role="button" scope="col" @click="sortDeadline('deadline')">Deadline
-          <button
-            class="btn btn-link"
-            @click="sortDeadline('asc')"
-          >
-            <i class="fas fa-sort-up"></i>
-          </button>
-          <button
-            class="btn btn-link"
-            @click="sortDeadline('desc')"
-          >
-            <i class="fas fa-sort-down"></i>
-          </button>
+          <div class="button-container">
+            <button class="btn btn-right" @click="sortDeadline('asc')">
+              <i class="fas fa-sort-up"></i>
+            </button>
+            <button class="btn btn-right" @click="sortDeadline('desc')">
+              <i class="fas fa-sort-down"></i>
+            </button>
+          </div>
         </th>
         <th scope="col">Actions</th>
       </tr>
@@ -27,11 +23,11 @@
         <td>{{ toDo.title }}</td>
         <td>{{ toDo.description }}</td>
         <td>{{ toDo.formatDate }}</td>
-        <td v-if="toDo.completed">
-          <i role="button" class="fas fa-check" @click="editDone(toDo)"></i>
+        <td v-if="toDo.completed" class="actions-button">
+          <i role="button" class="fas fa-undo" @click="editDone(toDo)"></i>
           <i role="button" class="fas fa-trash-alt" @click="deleteTodo(toDo)"></i>
         </td>
-        <td v-else class="">
+        <td v-else class="actions-button">
           <i role="button" class="fas fa-check" @click="editDone(toDo)"></i>
           <i role="button" class="fas fa-edit" @click="openModal(toDo)"></i>
           <i role="button" class="fas fa-trash-alt" @click="deleteTodo(toDo)"></i>
@@ -98,5 +94,13 @@ export default {
 </script>
 
 <style scoped>
+.button-container {
+  display: flex;
+  justify-content: space-between;
+}
 
+.actions-button {
+  display: flex;
+  justify-content: space-around;
+}
 </style>
